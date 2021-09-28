@@ -1,6 +1,14 @@
 #include "DigiKeyboard.h"
-#define KEY_DELETE 76
+#define KEY_DELETE            76
+#define BUTTON0               0
+#define BUTTON2               2
+#define TWOBUTTONDETECTDELAY  100
+#define LOOPDELAY             100
+#define KEYPRESSEDDELAY       500
+#define BTNPRESSED            0
 
+#define PASS1 "password1"
+#define PASS2 "password2"
 void setup() {
   // put your setup code here, to run once:
   pinMode(0, INPUT);
@@ -12,40 +20,54 @@ void loop()
 {
   while(1)
   {
-      int pass1 = digitalRead(0);
-      int pass2 = digitalRead(2);
+    digitalWrite(1,1);
+    
+    int button1Pressed = digitalRead(BUTTON0);
+    int button2Pressed = digitalRead(BUTTON2);
 
-      digitalWrite(1,1);
+    if(button1Pressed == BTNPRESSED)
+    {
+      DigiKeyboard.delay(TWOBUTTONDETECTDELAY);
+      button2Pressed = digitalRead(BUTTON2);
+    }
+    else if(button2Pressed == BTNPRESSED)
+    {
+      DigiKeyboard.delay(TWOBUTTONDETECTDELAY);
+      button1Pressed = digitalRead(BUTTON0);
+    }
+      
 
-      if(pass1 == 0 && pass2 == 0)
-      {
-           DigiKeyboard.sendKeyStroke(KEY_DELETE, MOD_ALT_RIGHT | MOD_CONTROL_LEFT);
-           KeyPressed();
-      } 
-      else if(pass1 == 0)
-      {   
-           DigiKeyboard.println("yourpassword1");
-           KeyPressed();
-      } 
-      else if(pass2 == 0)
-      {
-          DigiKeyboard.println("yourpassword2");
-          KeyPressed();
-      } 
-      else
-      {
-      }
-
-      DigiKeyboard.delay(100);
+    if(button1Pressed == BTNPRESSED && button2Pressed == BTNPRESSED)
+    {
+      DigiKeyboard.sendKeyStroke(KEY_DELETE, MOD_ALT_RIGHT | MOD_CONTROL_LEFT);
+      KeyPressed();
+      continue;
+    } 
+    else if(button1Pressed == BTNPRESSED)
+    {   
+      SendPass(PASS1);   
+    } 
+    else if(button2Pressed == BTNPRESSED)
+    {
+      SendPass(PASS2);
+    } 
+    else
+    {
+      DigiKeyboard.delay(LOOPDELAY);
+    }
   }
 }
 
 void KeyPressed()
 {
-    digitalWrite(1,0);
-    DigiKeyboard.sendKeyStroke(0);
-    DigiKeyboard.delay(250);
+  digitalWrite(1,0);
+  DigiKeyboard.sendKeyStroke(0);
+  DigiKeyboard.delay(KEYPRESSEDDELAY);
 }
 
-
-
+void SendPass(char* pass)
+{
+  DigiKeyboard.sendKeyStroke(0);
+  DigiKeyboard.println(pass);
+  KeyPressed();
+}
