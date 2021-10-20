@@ -9,6 +9,7 @@
 
 #define PASS1 "password1"
 #define PASS2 "password2"
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(0, INPUT);
@@ -18,8 +19,10 @@ void setup() {
 
 void loop() 
 {
+  char loopCount;
   while(1)
   {
+    loopCount ++;
     digitalWrite(1,1);
     
     int button1Pressed = digitalRead(BUTTON0);
@@ -54,6 +57,11 @@ void loop()
     else
     {
       DigiKeyboard.delay(LOOPDELAY);
+    }
+    
+    if(loopCount == 0)
+    {
+      DigiKeyboard.sendKeyStroke(0);
     }
   }
 }
